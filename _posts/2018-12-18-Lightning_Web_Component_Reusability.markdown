@@ -2,7 +2,6 @@
 layout: post
 title: "Lightning Web Component Reusability"
 date: 2018-12-18 19:43:24 -0500
-categories: jekyll update
 ---
 
 For even the simplest of user interface components, the cost in Salesforce labor and development may become significant. Requirements must be gathered, analyzed, and prioritized. User experience teams have to perform a plethora of tests. An array of stakeholders are required to sign off throughout the whole process. It is in the best interest of developers, architects, and product owners to reuse components whenever possible.
@@ -10,8 +9,6 @@ For even the simplest of user interface components, the cost in Salesforce labor
 Imagine a scenario where a developer has created a component which is to be used on an Account page. This component just displays some Account fields and attributes while using the lightning-record-form component and is called **AccountHighlights**.
 
 ![Account Highlights](/images/lightningWebComponentReusability/account-Highlights.gif)
-
-Jekyll also offers powerful support for code snippets:
 
 **AccountHighlights.js**
 
