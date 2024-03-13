@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Lightning Web Component Reusability"
-date: 2018-12-18 19:43:24 -0500
+date: 2019-12-18 19:43:24 -0500
 ---
 
 For even the simplest of user interface components, the cost in Salesforce labor and development may become significant. Requirements must be gathered, analyzed, and prioritized. User experience teams have to perform a plethora of tests. An array of stakeholders are required to sign off throughout the whole process. It is in the best interest of developers, architects, and product owners to reuse components whenever possible.
