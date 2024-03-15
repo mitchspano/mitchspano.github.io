@@ -61,29 +61,6 @@ return a;
 
 ![](/images/pmd/AST.png)
 
-```
-├── README.md
-├── config
-│   └── project-scratch-def.json
-├── category
-│   └── apex
-│       └── async-apex.xml
-├── pom.xml
-├── sfdx-project.json
-└── src
-    └── main
-        ├── default
-        │   └── classes
-        │       ├── Example.cls
-        │       └── Example.cls-meta.xml
-        └── java
-            └── com
-                └── mycompany
-                    └── pmd
-                        ├── AvoidFuture.java
-                        └── RequireFinalizer.java
-```
-
 Once PMD has generated the AST for a given class file, it uses the [Visitor pattern](https://en.wikipedia.org/wiki/Visitor_pattern) to traverse the tree and apply the rules.
 
 ---
@@ -147,6 +124,35 @@ We want to warn the author of Apex whenever they write a class implementing the 
 ## Custom Rules
 
 Alright, now with all of that background knowledge, let's get into the good stuff - how to actually write custom PMD rules. First, let's examine the project's layout.
+
+```
+├── README.md
+├── config
+│   └── project-scratch-def.json
+├── category
+│   └── apex
+│       └── async-apex.xml
+├── pom.xml
+├── sfdx-project.json
+└── src
+    └── main
+        ├── default
+        │   └── classes
+        │       ├── Example.cls
+        │       └── Example.cls-meta.xml
+        └── java
+            └── com
+                └── mycompany
+                    └── pmd
+                        ├── AvoidFuture.java
+                        └── RequireFinalizer.java
+```
+
+You'll see that in this case, we are keeping both our sfdx and Java project together in one repository. This is for demonstration purposes - you might want to separate them in your team's workflow, so keep that in mind.
+
+### AvoidFuture.java
+
+Let's write our first rule. Recall that these are our requirements: **Do not use the @Future annotation within a class.**
 
 ```java
 /*
