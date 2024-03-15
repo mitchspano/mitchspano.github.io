@@ -1,0 +1,422 @@
+---
+layout: post
+title: "Constants 2.0"
+date: 2023-11-08 19:43:24 -0500
+---
+
+Constants 2.0
+
+# Rethinking Constant Management
+
+Salesforce development, like any other software development, thrives on clean,
+efficient, and reusable code.
+
+\
+Traditional practices in Salesforce projects often include the use of a Constants class
+to define primitive constants such as strings and dates.
+These constants serve as _identifiers for non-primitive constants_ such as record types, queues,
+public groups, and other Salesforce objects.
+
+\
+Let's dive into how this is conventionally
+done and the challenges it poses and propose some useful alternatives to improve the
+health of your team's codebase.
+
+---
+
+## Traditional Approach: The Constants Class
+
+In typical Salesforce projects, a `Constants` class is a common sight.
+This class contains static final variables representing various identifiers. For example:
+
+```java
+/*
+  Copyright 2023 Google LLC
+  SPDX-License-Identifier: Apache-2.0
+*/
+public class Constants {
+  public static final String RECORDTYPE_ACCOUNT_RETAIL = 'Retail';
+  public static final String RECORDTYPE_ACCOUNT_WHOLESALE = 'Wholesale';
+
+  public static final String GROUP_AMERICA_SERVICE = 'America_Service';
+  public static final String QUEUE_AMERICA_SERVICE = 'America_Service';
+}
+```
+
+These constants are then used throughout the codebase
+to reference specific Salesforce objects. For instance:
+
+```java
+/*
+  Copyright 2023 Google LLC
+  SPDX-License-Identifier: Apache-2.0
+*/
+public class MyClass {
+  public void foo(Account acc) {
+    Id wholesaleRecordTypeId = Schema.SObjectType.Account
+      .getRecordTypeInfosByDeveloperName()
+      .get(Constants.RECORDTYPE_ACCOUNT_WHOLESALE)
+      .getRecordTypeId();
+    Group americaServiceQueue = [
+      SELECT Id
+      FROM Group
+      WHERE DeveloperName = :Constants.QUEUE_AMERICA_SERVICE
+      AND Type = 'Queue'
+    ];
+    if (
+      acc.RecordTypeId == wholesaleRecordTypeId &&
+      acc.OwnerId == americaServiceQueue.Id
+    ) {
+      // do some stuff
+    }
+  }
+}
+```
+
+## The Challenges
+
+While this method seems straightforward, it comes with its set of challenges:
+
+- **Lengthy Code**: The need to constantly refer back to the Constants class for
+  identifiers can lead to verbose and less readable code. This verbosity becomes
+  more pronounced in larger projects with numerous constants.
+- **Repeated Code**: Developers often find themselves writing similar lines of
+  code to retrieve record type IDs, group IDs, etc., leading to a redundancy that
+  could be avoided with a more streamlined approach.
+- **Unnecessary Queries**: The pattern of querying Salesforce objects based on
+  these constants, especially in scenarios where multiple queries are executed in
+  a single transaction, can lead to limit errors. This is particularly problematic
+  in cases where the same query is executed multiple times within a single transaction.
+
+---
+
+## Constants 2.0
+
+To address these challenges, Salesforce developers should consider adopting more
+dynamic and efficient coding practice for defining constants which we like to call
+**Constants 2.0**.
+
+Constants 2.0 is a way to define _statically typed_ references to constant objects which are
+_available at compile time_:
+
+```java
+/*
+  Copyright 2023 Google LLC
+  SPDX-License-Identifier: Apache-2.0
+*/
+public class MyClass {
+  public void foo(Account acc) {
+    if (
+      acc.RecordTypeId == RecordTypes.forAccount.wholesale.Id &&
+      acc.OwnerId == Groups.queues.americaService.Id
+    ) {
+      // do some stuff
+    }
+  }
+}
+```
+
+## But... how?
+
+The key idea is to abstract the details of fetching and storing object information
+in a way that's reusable and efficient, then providing compile time references
+and a great interface for the developers on your team.
+
+\
+For a given `Widget` data type, we define a top level abstract `WidgetConstant` class which
+is responsible for populating the constants.\
+Then we define a separate `Widgets` class which has inner classes and static lazy loaded variables.
+
+This defines statically typed references to these objects, enables autocomplete within the IDE,
+and provides an excellent experience for the developers on your team.
+
+\
+Below is an example of how we can define Record Types using Constants 2.0:
+
+```java
+/*
+  Copyright 2023 Google LLC
+  SPDX-License-Identifier: Apache-2.0
+*/
+public abstract class RecordTypeConstant {
+  private final Schema.sObjectType sObjectType;
+  private final Map<String, RecordType> developerNameToRecordType = new Map<String, RecordType>();
+  private final Map<Id, RecordType> idToRecordType = new Map<Id, RecordType>();
+
+  protected RecordTypeConstant() {
+    this.sObjectType = this.getSObjectType();
+    if (sObjectType == null) {
+      throw new IllegalArgumentException('sObjectType cannot be null');
+    }
+    this.populateIdentifierMaps();
+  }
+
+  public RecordType fromDeveloperName(String developerName) {
+    if (!developerNameToRecordType.containsKey(developerName)) {
+      throw new IllegalArgumentException(
+        'Invalid RecordType DeveloperName : ' + developerName
+      );
+    }
+    return this.developerNameToRecordType.get(developerName);
+  }
+
+  public RecordType fromId(Id i) {
+    if (!idToRecordType.containsKey(i)) {
+      throw new IllegalArgumentException('Invalid RecordType Id : ' + i);
+    }
+    return this.idToRecordType.get(i);
+  }
+
+  protected abstract Schema.sObjectType getSObjectType();
+
+  private void populateIdentifierMaps() {
+    for (
+      Schema.RecordTypeInfo info : this.sObjectType.getDescribe(
+          SObjectDescribeOptions.DEFERRED
+        )
+        .getRecordTypeInfos()
+    ) {
+      RecordType type = new RecordType(
+        Id = info.getRecordTypeId(),
+        Name = info.getName(),
+        DeveloperName = info.getDeveloperName()
+      );
+      this.developerNameToRecordType.put(type.DeveloperName, type);
+      this.idToRecordType.put(type.Id, type);
+    }
+  }
+}
+```
+
+```java
+/*
+  Copyright 2023 Google LLC
+  SPDX-License-Identifier: Apache-2.0
+*/
+public class RecordTypes {
+  public static AccountRecordTypes forAccount {
+    get {
+      if (forAccount == null) {
+        forAccount = new AccountRecordTypes();
+      }
+      return forAccount;
+    }
+    private set;
+  }
+
+  public static ContactRecordTypes forContact {
+    get {
+      if (forContact == null) {
+        forContact = new ContactRecordTypes();
+      }
+      return forContact;
+    }
+    private set;
+  }
+
+  public class AccountRecordTypes extends RecordTypeConstant {
+    public override Schema.SObjectType getSObjectType() {
+      return Account.SObjectType;
+    }
+
+    public final RecordType retail = this.fromDeveloperName('Retail');
+    public final RecordType wholesale = this.fromDeveloperName('Wholesale');
+  }
+
+  public class ContactRecordTypes extends RecordTypeConstant {
+    public override Schema.SObjectType getSObjectType() {
+      return Contact.SObjectType;
+    }
+
+    public final RecordType customer = this.fromDeveloperName('Customer');
+    public final RecordType partner = this.fromDeveloperName('Partner');
+  }
+}
+```
+
+This approach allows us to gain compile-time access to each of the Record Types for
+each sObject, but also includes support for dynamic access with `fromId(Id i)` and
+`fromDeveloperName(String developerName)`. Below is an example where the RecordType's
+information can be fetched dynamically from a dynamically provided `DeveloperName` value
+stored in custom metadata:
+
+```java
+/*
+  Copyright 2023 Google LLC
+  SPDX-License-Identifier: Apache-2.0
+*/
+public void setAccountDefaults(
+  Account acc,
+  Account_Configuration__mdt configuration
+) {;
+  acc.RecordTypeId = RecordTypes.forAccount
+    .fromDeveloperName(configuration.RecordType_DeveloperName__c)
+    .Id;
+  // finish populating.
+}
+```
+
+A similar approach can be taken for constants which require the execution
+of a query to populate such as `Groups`:
+
+```java
+/*
+  Copyright 2023 Google LLC
+  SPDX-License-Identifier: Apache-2.0
+*/
+public abstract class GroupConstant {
+  private static final Set<String> GROUP_TYPES = new Set<String>{
+    'AllCustomerPortal',
+    'ChannelProgramGroup',
+    'CollaborationGroup',
+    'Manager',
+    'ManagerAndSubordinatesInternal',
+    'Organization',
+    'Participant',
+    'PRMOrganization',
+    'Queue',
+    'Regular',
+    'Role',
+    'RoleAndSubordinates',
+    'RoleAndSubordinatesInternal',
+    'Territory',
+    'TerritoryAndSubordinates'
+  };
+  private final String type;
+  private final Map<String, Group> developerNameToGroup = new Map<String, Group>();
+  private final Map<Id, Group> idToGroup = new Map<Id, Group>();
+
+  protected GroupConstant() {
+    this.type = getType();
+    if (!GROUP_TYPES.contains(this.type)) {
+      throw new IllegalArgumentException(
+        'Invalid type. Allowed types are : ' + String.join(GROUP_TYPES, ',')
+      );
+    }
+    this.populateIdentifierMaps();
+  }
+
+  public Group fromDeveloperName(String developerName) {
+    if (!developerNameToGroup.containsKey(developerName)) {
+      throw new IllegalArgumentException(
+        'Invalid Group DeveloperName: ' + developerName
+      );
+    }
+    return this.developerNameToGroup.get(developerName);
+  }
+
+  public Group fromId(Id id) {
+    if (!idToGroup.containsKey(id)) {
+      throw new IllegalArgumentException('Invalid Group Id: ' + id);
+    }
+    return this.idToGroup.get(id);
+  }
+
+  protected abstract String getType();
+
+  private void populateIdentifierMaps() {
+    for (Group g : [
+      SELECT Id, DeveloperName, Name
+      FROM Group
+      WHERE Type = :this.type
+    ]) {
+      this.developerNameToGroup.put(g.DeveloperName, g);
+      this.idToGroup.put(g.Id, g);
+    }
+  }
+}
+```
+
+```java
+/*
+  Copyright 2023 Google LLC
+  SPDX-License-Identifier: Apache-2.0
+*/
+public class Groups {
+  public static RegularGroups publicGroups {
+    get {
+      if (publicGroups == null) {
+        publicGroups = new RegularGroups();
+      }
+      return publicGroups;
+    }
+    private set;
+  }
+
+  public static QueueGroups queues {
+    get {
+      if (queues == null) {
+        queues = new QueueGroups();
+      }
+      return queues;
+    }
+    private set;
+  }
+
+  public class RegularGroups extends GroupConstant {
+    public override String getType() {
+      return 'Regular';
+    }
+    public final Group americaService = this.fromDeveloperName(
+      'America_Service'
+    );
+  }
+
+  public class QueueGroups extends GroupConstant {
+    public override String getType() {
+      return 'Queue';
+    }
+    public final Group americaService = this.fromDeveloperName(
+      'America_Service'
+    );
+  }
+}
+```
+
+---
+
+## Eligibility Criteria
+
+When evaluating to use the Constants 2.0 pattern, the value you are trying to represent
+should satisfy _all_ of the below criteria:
+
+- The value must be a non-primitive data type (see examples below)
+- The value should be read frequently in your codebase
+- The value must be immutable throughout the course of a transaction
+
+\
+Some examples of data types which are good candidates for Constants 2.0 include:
+
+- Record Types
+- Groups
+- Profiles
+- Roles
+- Email Templates
+- Organization Wide Email Addresses
+- Picklist Values
+
+---
+
+## Warnings and Gotchas
+
+This technique can be very powerful and _greatly_ improve the readability and maintenance
+of your codebase, but it is not a silver bullet:
+
+- **Potential Query Limits**: Be careful to ensure that you are not querying too many rows when
+  using this technique. In the example above, creating a new constant for Groups where `Type = 'Manager'`
+  could _easily_ result in a `TOO_MANY_ROWS` error.
+- **Heap Space**: Depending on how you construct your constants, you may consume a large amount of transactional
+  heap space.
+
+---
+
+## Opportunities for Improvement
+
+You may also be able to get extra performance and query limit benefits by using
+the platform cache. If you choose to use the cache, I would recommend implementing the
+[Cache.Cachebuilder interface](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_interface_cache_CacheBuilder.htm)
+to construct your cached values.
+
+\
+There is also an opportunity here to further abstract the idea of a `Constant` (and perhaps `CachedConstant`)
+as some of the code between `GroupConstant` and `RecordTypeConstant` is similar.
