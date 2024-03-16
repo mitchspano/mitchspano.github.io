@@ -116,7 +116,7 @@ An _end-to-end_ test is meant to emulate end user behavior by launching a headle
 
 As Salesforce Developers, we sometimes forget how to classify our interactions with the database when writing tests. Apex treats the Database as a first class citizen within the language; we can execute a query and directly assign the query results to objects in memory. This is _not_ the norm for any other technology stack.
 
-![](/_config.ymlimages/pureUnitTesting/apexDatabase.png)
+![](/images/pureUnitTesting/apexDatabase.png)
 
 Because of this uniquely low friction when interacting with the database, we as Salesforce developers often accidentally define _integration_ tests instead of pure unit tests. Consider the following code block:
 
@@ -210,7 +210,7 @@ public class AccountController {
   @TestVisible AccountController.Selector selector = new AccountController.Selector();
 
   private Account getAccountFromId(Id recordId) {
-    List&lt;Account&gt; accounts = selector.getAccountFromId(recordId);
+    List<Account> accounts = selector.getAccountFromId(recordId);
     if (accounts.isEmpty()) {
       throw new AuraHandledException(Constants.INVALID_RECORD_ID + recordId);
     }
@@ -219,7 +219,7 @@ public class AccountController {
 
   @TestVisible
   private virtual with sharing class Selector {
-    public virtual List&lt;Account&gt; getAccountFromId(Id accountId) {
+    public virtual List<Account> getAccountFromId(Id accountId) {
       return [
         SELECT Id, BillingState, ParentId, Parent.BillingState
         FROM Account
@@ -242,7 +242,7 @@ private class AccountControllerTest {
       BillingState = 'Minnesota'
     );
     controllerUnderTest.selector = new FakeSelector(
-      new List&lt;Account&gt;{ mockedAccount }
+      new List<Account>{ mockedAccount }
     );
 
     String category = controllerUnderTest.getCalculatedCategory(
@@ -257,11 +257,11 @@ private class AccountControllerTest {
   }
 
   private inherited sharing class FakeSelector extends AccountController.Selector {
-    private List&lt;Account&gt; theAccounts;
-    public FakeSelector(List&lt;Account&gt; theAccounts) {
+    private List<Account> theAccounts;
+    public FakeSelector(List<Account> theAccounts) {
       this.theAccounts = theAccounts;
     }
-    public override List&lt;Account&gt; getAccountFromId(Id accountId) {
+    public override List<Account> getAccountFromId(Id accountId) {
       return this.theAccounts;
     }
   }
