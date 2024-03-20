@@ -31,7 +31,7 @@ only consider the color and firmness of the apple.
 Now let's imagine that as customers are leaving the orchard with their newly purchased apples,
 we write down the color as a decimal value from 0 to 1 (0 being dead and brown and 1 being bright red) and the firmness a decimal value from 0 to 1 (0 being soft and squishy and 1 being hard as a rock). We then ask the customers to take a bite out of the apple and tell us if it is tasty or not and we record their response.
 
-What we would like to do is use this data that we have gathered from surveying our customers to predict which apples that we sell int he future will be tasty or not, without us having to ask the customers or take a bite ourselves.
+What we would like to do is use this data that we have gathered from surveying our customers to predict which apples that we sell in the future will be tasty or not, without us having to ask the customers or take a bite ourselves.
 
 We can think of the input here being the features of a single apple and the output that we would like to produce is a binary label: tasty or not tasty.
 
