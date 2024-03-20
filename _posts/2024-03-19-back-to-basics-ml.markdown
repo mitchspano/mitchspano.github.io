@@ -74,8 +74,8 @@ In other words, the Cartesian product $A \times B$ contains all possible pairs $
 
 A function is a mathematical relation between two sets, known as the domain and the range, that assigns to each element in the domain exactly one element in the range. In simpler terms, a function is a rule or mapping that associates each input value (or argument) from the domain with exactly one output value in the range.
 
-More formally, let X and Y be two sets. A function $f$ from $\mathcal{X}$ to $\mathcal{Y}$, denoted as $f: \mathcal{X} \to \mathcal{Y}$, is a correspondence that assigns to each element
-$x$ in the domain set $X$ a unique element $y$ in the range set $Y$. Mathematically, this correspondence is represented by the functional notation:
+More formally, let $\mathcal{X}$ and $\mathcal{Y}$ be two sets. A function $f$ from $\mathcal{X}$ to $\mathcal{Y}$, denoted as $f: \mathcal{X} \to \mathcal{Y}$, is a correspondence that assigns to each element
+$x$ in the domain set $\mathcal{X}$ a unique element $y$ in the range set $\mathcal{Y}$. Mathematically, this correspondence is represented by the functional notation:
 
 $$ f(x) = y$$
 

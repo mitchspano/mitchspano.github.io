@@ -27,7 +27,7 @@ permalink: /blog/:title
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: mitchspano
 github_username: mitchspano
-
+logo: "/images/avatar-circle.png"
 # Build settings
 theme: minima
 plugins:
