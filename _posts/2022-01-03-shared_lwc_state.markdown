@@ -90,7 +90,7 @@ export default class MyComponent extends LightningElement {
 
 Notice how one component will set the state to a certain color, and when the others get the refreshed state, they will also see the same color specified by the different component. Excellent - we are able to share the same state across multiple components!
 
-Manual Refresh GIF
+![](/images/sharedState/manualRefresh.gif)
 
 However, we do have a limitation with our current setup. The other components on the screen must manually refresh the state when it is updated somewhere on the page. This might be fine if you only need to check the shared state upon a button click or a specific event, but you might want to automatically refresh the neighboring components whenever the state is updated.
 

@@ -85,11 +85,11 @@ $$ f(x) = y$$
 
 An arbitrary set, $\mathcal{X}$ . This is the set of objects that we may wish to label. For example, in the apple tastiness problem mentioned before, the domain set will be the set of all apples.
 
-Usually, these domain points will be represented by a vector of features such as sender species, color, firmness, density, weight, age, etc.
+Usually, these domain points will be represented by a vector of features such as species, color, firmness, density, weight, age, etc.
 
 #### Label Set
 
-For our current discussion, we will restrict the label set to be a two-element set, usually $ \\{ 0, 1 \\} $. Let $\mathcal{Y}$ denote our set of possible labels. For our email example, let $\mathcal{Y}$ be $\\{0, 1\\}$, where 1 represents being tasty and 0 means not-tasty.
+For our current discussion, we will restrict the label set to be a two-element set, usually $ \\{ 0, 1 \\} $. Let $\mathcal{Y}$ denote our set of possible labels. For our apple example, let $\mathcal{Y}$ be $\\{0, 1\\}$, where 1 represents being tasty and 0 means not-tasty.
 
 #### Training Data
 
@@ -105,7 +105,7 @@ Finally, the learner, often an algorithm or model, undergoes training on the lab
 
 #### Accuracy
 
-It's great that we can produce a hypothesis, but how do we measure it's accuracy to evaluate it against other hypotheses? Assume $f:\mathcal{X} \to \mathcal{Y}$ exists and is an unknown function we are trying to predict. We measure the _error rate_ of our hypotheses as the probability that it did not predict the correct label for a random element in our domain. Formally speaking, the error rate $L$ of a hypothesis $h$ is defined as:
+It's great that we can produce a hypothesis, but how do we measure its accuracy to evaluate it against other hypotheses? Assume $f:\mathcal{X} \to \mathcal{Y}$ exists and is an unknown function we are trying to predict. We measure the _error rate_ of our hypotheses as the probability that it did not predict the correct label for a random element in our domain. Formally speaking, the error rate $L$ of a hypothesis $h$ is defined as:
 
 $$L(h) = \mathbb{P}[h(x) \ne f(x)]$$
 
