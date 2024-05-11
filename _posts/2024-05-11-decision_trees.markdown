@@ -362,8 +362,8 @@ To find the root of the right subtree, we will examine the errors and gains prod
 | 4         | 1                 | 1                 | 0              | 0              | 1             |
 | **5**     | **0**             | **0**             | **0**          | **0**          | **0**         |
 
-Note that in this situation, every row of data that has "Employment Status" of 0 results int he denial of their loan application.
-This means that we have a pure decision; when the applicant is a home owner, we would predict they would receive loan approval.
+Note that in this situation, every row of data that has "Employment Status" of 0 results in the denial of their loan application.
+This means that we have a pure decision; when the applicant is a unemployed, we would predict their loan would be denied.
 
 <!-- prettier-ignore-start -->
 {% plantuml %}
