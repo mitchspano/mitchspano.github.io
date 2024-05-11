@@ -409,7 +409,7 @@ $$
 
 #### If $x_i$ is "Good Credit Score"
 
-| $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 0}}}[ x_i=0 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 0}}}[y=0 \| x_i=0]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 0}}}[ x_i=1 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 0}}}[y=0 \| x_i=1]$ |
+| $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 1}}}[ x_i=0 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 1}}}[y=0 \| x_i=0]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 1}}}[ x_i=1 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 1}}}[y=0 \| x_i=1]$ |
 | ---------------------------------------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | $\dfrac{1}{3}$                                                         | $\dfrac{1}{1}$                                                              | $\dfrac{2}{3}$                                                         | $\dfrac{0}{2}$                                                              |
 
