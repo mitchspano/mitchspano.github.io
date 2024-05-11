@@ -8,18 +8,19 @@ date: 2024-05-11 01:43:24 -0500
 ## A Beginner's Guide to Decision Trees
 
 In the [last post](back-to-basics-ml), we discussed the concept of a _learner_ which undergoes training on the labeled
-dataset to discern underlying patterns and subsequently make predictions on new, unseen data.
+data set $S$ to discern underlying patterns and subsequently make predictions on new, unseen data.
 
-In ths post, we will go over a classic example of a shallow learning algorithm for binary classification - Decision Trees.
+In ths post, we will go over a classic example of a shallow learning algorithm for binary classification - **Decision Trees**.
 
 A decision tree is a hypothesis function, $h:\mathcal{X} \to \mathcal{Y}$, that predicts the
 label associated with an instance $x$ by traveling from a root node of a tree to a leaf, evaluating
 decision criteria along the way.
-Today we focus on the binary classification setting where $\mathcal{Y} = \\{0, 1\\}$ but decision
-trees can be applied for other prediction problems as well.
 
 At each node of the path from the root node to the leaf, the next child is chosen on a basis of
 partitioning or splitting the training data.
+
+Today we focus on the binary classification setting where $\mathcal{Y} = \\{0, 1\\}$ but decision
+trees can be applied for other prediction problems as well.
 
 Here is an example of a simple decision tree. At each node, going to its left subtree denotes making a "no" (or 0) decision,
 going to the right subtree denotes a "yes" (or 1) decision. Terminal states are denoted in red and green colors:
@@ -102,9 +103,13 @@ $P(A)$ is the probability that event $A$ occurs.
 
 #### Potential Function
 
-A potential function is a measure of the error of a conditional probability represented within a decision tree.
-The Gini index is one such potential function. We will use this to determine the next feature to select
-as the root of the subtree as we construct the decision tree.
+A potential function is a measure of the uncertainty of a conditional probability represented within a decision tree.
+If the potential function returns a 0 or 1, then we call the node _pure_; meaning that it directly
+correlates to the label for all data in our sample $S$.
+
+The Gini index is one such potential function.
+We will use this to determine the next feature to select as the root
+of the subtree as we construct the decision tree.
 
 $$
   \phi (a) = 2a(1 − a).
@@ -322,7 +327,7 @@ So we know that selecting "Home Ownership" is proper next root of the subtree.
 <!-- prettier-ignore-start -->
 {% plantuml %}
 @startwbs
-* Home Ownership
+* Home Ownership?
 
 @endwbs
 {% endplantuml %}
@@ -508,6 +513,11 @@ wbsDiagram {
 @endwbs
 {% endplantuml %}
 <!-- prettier-ignore-end -->
+
+### Accurate Score
+
+The _accuracy score_ of a decision tree is simply the ratio of data points in $S$ that it labels
+correctly over the total number of data points. For this tree we have an accuracy score of $\dfrac{4}{5}$.
 
 ## Encode it
 
