@@ -318,16 +318,17 @@ $$
 Next we select the ${x_i}$ which gives us the most significant gain. The gain for each of the
 potential candidate features is outlined below.
 
-| Good Credit Score | Employment Status | Home Ownership           | Existing Debts  |
-| ----------------- | ----------------- | ------------------------ | --------------- |
-| $\dfrac{16}{75}$  | $\dfrac{16}{75}$  | $\mathbf{\dfrac{9}{50}}$ | $\dfrac{2}{25}$ |
+| Good Credit Score | Employment Status         | Home Ownership  | Existing Debts  |
+| ----------------- | ------------------------- | --------------- | --------------- |
+| $\dfrac{16}{75}$  | $\mathbf{\dfrac{16}{75}}$ | $\dfrac{9}{50}$ | $\dfrac{2}{25}$ |
 
-So we know that selecting "Home Ownership" is proper next root of the subtree.
+"Good Credit Score" and "Employment Status" are tied for the maximum gain, so we will
+choose "Employment Status" as the root of the tree.
 
 <!-- prettier-ignore-start -->
 {% plantuml %}
 @startwbs
-* Home Ownership?
+* Employment Status?
 
 @endwbs
 {% endplantuml %}
@@ -343,132 +344,26 @@ $$
 \begin{aligned}
   \text{error}_{x_i} =& \mathbb{P}_{x,y\sim S}[x_i=0] \cdot \phi(\mathbb{P}_{x,y\sim S}[y=0|x_i=0]) + \\
                     & \mathbb{P}_{x,y\sim S}[x_i=1] \cdot \phi(\mathbb{P}_{x,y\sim S}[y=0|x_i=1])\\
-                    =& \dfrac{2}{5}
+                    =& \dfrac{3}{10}
 \end{aligned}
-$$
-
-To find the root of the right subtree, we will examine the errors and gains produced by potential candidate features conditioned on "Home Ownership" being 1.
-
-| Applicant | Good Credit Score | Employment Status | Home Ownership | Existing Debts | Loan Approved |
-| --------- | ----------------- | ----------------- | -------------- | -------------- | ------------- |
-| **1**     | **1**             | **1**             | **1**          | **1**          | **1**         |
-| 2         | 0                 | 1                 | 0              | 1              | 0             |
-| 3         | 1                 | 0                 | 0              | 0              | 0             |
-| 4         | 1                 | 1                 | 0              | 0              | 1             |
-| 5         | 0                 | 0                 | 0              | 0              | 0             |
-
-Note that in this situation, we only have one row of data to focus on.
-This means that we have a _pure decision_; when the applicant is a home owner, we would predict they would receive loan approval.
-
-Similarly, for the left subtree, we will examine the errors and gains produced by potential candidate features conditioned on
-"Home Ownership" being 0.
-
-| Applicant | Good Credit Score | Employment Status | Home Ownership | Existing Debts | Loan Approved |
-| --------- | ----------------- | ----------------- | -------------- | -------------- | ------------- |
-| 1         | 1                 | 1                 | 1              | 1              | 1             |
-| **2**     | **0**             | **1**             | **0**          | **1**          | **0**         |
-| **3**     | **1**             | **0**             | **0**          | **0**          | **0**         |
-| **4**     | **1**             | **1**             | **0**          | **0**          | **1**         |
-| **5**     | **0**             | **0**             | **0**          | **0**          | **0**         |
-
-We denote the probability of an event $E$ occurring when "Home Ownership" is 0 as:
-
-$$
-  \mathbb{P}_{x,y\sim S_{|_{\text{Home Ownership} = 0}}}[ E ]
 $$
 
 **This act of partitioning the data based on the parent node is how decision trees are constructed.**
 
-### Right Subtree
+### Left Subtree
 
-#### If $x_i$ is "Good Credit Score"
+To find the root of the right subtree, we will examine the errors and gains produced by potential candidate features conditioned on "Employment Status" being 0.
 
-| $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[ x_i=0 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[y=0 \| x_i=0]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[ x_i=1 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[y=0 \| x_i=1]$ |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| $\dfrac{2}{4}$                                                      | $\dfrac{2}{2}$                                                           | $\dfrac{2}{4}$                                                      | $\dfrac{0}{2}$                                                           |
+| Applicant | Good Credit Score | Employment Status | Home Ownership | Existing Debts | Loan Approved |
+| --------- | ----------------- | ----------------- | -------------- | -------------- | ------------- |
+| 1         | 1                 | 1                 | 1              | 1              | 1             |
+| 2         | 0                 | 1                 | 0              | 1              | 0             |
+| **3**     | **1**             | **0**             | **0**          | **0**          | **0**         |
+| 4         | 1                 | 1                 | 0              | 0              | 1             |
+| **5**     | **0**             | **0**             | **0**          | **0**          | **0**         |
 
-So we would have that the error is defined as:
-
-$$
- \text{error}_{x_i} = \dfrac{2}{4} \cdot \phi \left(\dfrac{2}{2}\right) + \dfrac{2}{4} \cdot \phi \left(\dfrac{0}{2}\right)
-
- \\
- \text{error}_{x_i} = \dfrac{2}{4} \cdot 0 + \dfrac{2}{4} \cdot 0
-
- \\
- \text{error}_{x_i} = 0
-$$
-
-And the gain would be defined as:
-
-$$
-  \text{gain}_{x_i} = \dfrac{2}{5} - 0
-  \\
-  \text{gain}_{x_i} = \dfrac{2}{5}
-$$
-
-#### If $x_i$ is "Employment Status"
-
-| $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[ x_i=0 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[y=0 \| x_i=0]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[ x_i=1 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[y=0 \| x_i=1]$ |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| $\dfrac{2}{4}$                                                      | $\dfrac{2}{2}$                                                           | $\dfrac{2}{4}$                                                      | $\dfrac{1}{2}$                                                           |
-
-So we would have that the error is defined as:
-
-$$
- \text{error}_{x_i} = \dfrac{2}{4} \cdot \phi \left(\dfrac{2}{2}\right) + \dfrac{2}{4} \cdot \phi \left(\dfrac{1}{2}\right)
-
- \\
- \text{error}_{x_i} = \dfrac{2}{4} \cdot 0 + \dfrac{2}{4} \cdot \dfrac{1}{2}
-
- \\
- \text{error}_{x_i} = \dfrac{1}{4}
-$$
-
-And the gain would be defined as:
-
-$$
-  \text{gain}_{x_i} = \dfrac{2}{5} - \dfrac{1}{4}
-  \\
-  \text{gain}_{x_i} = \dfrac{3}{20}
-$$
-
-#### If $x_i$ is "Existing Debts"
-
-| $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[ x_i=0 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[y=0 \| x_i=0]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[ x_i=1 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Home Ownership} = 0}}}[y=0 \| x_i=1]$ |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| $\dfrac{3}{4}$                                                      | $\dfrac{2}{3}$                                                           | $\dfrac{1}{4}$                                                      | $\dfrac{0}{1}$                                                           |
-
-So we would have that the error is defined as:
-
-$$
- \text{error}_{x_i} = \dfrac{3}{4} \cdot \phi \left(\dfrac{2}{3}\right) + \dfrac{1}{4} \cdot \phi \left(\dfrac{0}{1}\right)
-
- \\
- \text{error}_{x_i} = \dfrac{3}{4} \cdot \dfrac{4}{9} + \dfrac{2}{4} \cdot 0
-
- \\
- \text{error}_{x_i} = \dfrac{1}{3}
-$$
-
-And the gain would be defined as:
-
-$$
-  \text{gain}_{x_i} = \dfrac{2}{5} - \dfrac{1}{3}
-  \\
-  \text{gain}_{x_i} = \dfrac{1}{15}
-$$
-
-### Select Maximum
-
-Next we select the ${x_i}$ which gives us the most significant gain. The gain for each of the
-potential candidate features is outlined below.
-
-| Good Credit Score       | Employment Status | Existing Debts  |
-| ----------------------- | ----------------- | --------------- |
-| $\mathbf{\dfrac{2}{5}}$ | $\dfrac{3}{20}$   | $\dfrac{1}{15}$ |
-
-So we know that selecting "Good Credit Score " is proper next root of the subtree.
+Note that in this situation, every row of data that has "Employment Status" of 0 results int he denial of their loan application.
+This means that we have a pure decision; when the applicant is a home owner, we would predict they would receive loan approval.
 
 <!-- prettier-ignore-start -->
 {% plantuml %}
@@ -478,18 +373,71 @@ wbsDiagram {
   .green {
       BackgroundColor #90EE90
   }
+  .red {
+      BackgroundColor #FF474C
+  }
+  .gray {
+      BackgroundColor #D3D3D3
+  }
 }
 </style>
-* Home Ownership?
-** Good Credit Score?
-** APPROVE <<green>>
++ Employment Status?
+++ DENY <<red>>
+++ ... <<gray>>
 
 @endwbs
 {% endplantuml %}
 <!-- prettier-ignore-end -->
 
-At this point, we could recurse down yet another level, but note that the error on the "Good Credit Score" node is 0.
-This again means that we have a _pure decision_; when the applicant does not own a home, but they have a good credit score, we would predict they would receive loan approval, else, they would be denied.
+### Right Subtree
+
+To find the root of the right subtree, we will examine the errors and gains produced by potential candidate features conditioned on "Employment Status" being 1.
+
+| Applicant | Good Credit Score | Employment Status | Home Ownership | Existing Debts | Loan Approved |
+| --------- | ----------------- | ----------------- | -------------- | -------------- | ------------- |
+| **1**     | **1**             | **1**             | **1**          | **1**          | **1**         |
+| **2**     | **0**             | **1**             | **0**          | **1**          | **0**         |
+| 3         | 1                 | 0                 | 0              | 0              | 0             |
+| **4**     | **1**             | **1**             | **0**          | **0**          | **1**         |
+| 5         | 0                 | 0                 | 0              | 0              | 0             |
+
+We denote the probability of an event $E$ occurring when "Employment Status" is 1 as:
+
+$$
+  \mathbb{P}_{x,y\sim S_{|_{\text{Employment Status} = 1}}}[ E ]
+$$
+
+#### If $x_i$ is "Good Credit Score"
+
+| $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 0}}}[ x_i=0 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 0}}}[y=0 \| x_i=0]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 0}}}[ x_i=1 ]$ | $\mathbb{P}\_{x,y\sim S_{\|_{\text{Employment Status} = 0}}}[y=0 \| x_i=1]$ |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| $\dfrac{1}{3}$                                                         | $\dfrac{1}{1}$                                                              | $\dfrac{2}{3}$                                                         | $\dfrac{0}{2}$                                                              |
+
+So we would have that the error is defined as:
+
+$$
+ \text{error}_{x_i} = \dfrac{1}{3} \cdot \phi \left(\dfrac{1}{1}\right) + \dfrac{2}{3} \cdot \phi \left(\dfrac{0}{2}\right)
+
+ \\
+ \text{error}_{x_i} = \dfrac{1}{3} \cdot 0 + \dfrac{2}{3} \cdot 0
+
+ \\
+ \text{error}_{x_i} = 0
+$$
+
+And the gain would be defined as:
+
+$$
+  \text{gain}_{x_i} = \dfrac{4}{15} - 0
+  \\
+  \text{gain}_{x_i} = \dfrac{4}{15}
+$$
+
+Note that because we produce 0 error on "Good Credit Score" as a potential root of this tree, we are guaranteed that it is an optimal choice
+for maximizing the gain, so there is no need to calculate the error and gain for other candidate roots.
+
+At this point, we could recurse down yet another level, but the error on the "Good Credit Score" node is 0.
+This again means that we have a _pure decision_; when the applicant is not employed, but they have a good credit score, we would predict they would receive loan approval, else, they would be denied.
 
 <!-- prettier-ignore-start -->
 {% plantuml %}
@@ -504,11 +452,11 @@ wbsDiagram {
   }
 }
 </style>
-+ Home Ownership?
++ Employment Status?
+++ DENY <<red>>
 ++ Good Credit Score?
-++- DENY <<red>>
 +++ APPROVE <<green>>
-++ APPROVE <<green>>
+++- DENY <<red>>
 
 @endwbs
 {% endplantuml %}
@@ -517,17 +465,26 @@ wbsDiagram {
 ### Accurate Score
 
 The _accuracy score_ of a decision tree is simply the ratio of data points in $S$ that it labels
-correctly over the total number of data points. For this tree we have an accuracy score of $\dfrac{4}{5}$.
+correctly over the total number of data points. For this tree we have an accuracy score of $\dfrac{5}{5}$.
+This means that every example within our small training data set would be properly classified with this simple decision tree.
+
+### Predictive Power
+
+It's great that we have a model that fits all of the data it has seen, but how would we use this to classify a new loan application?
+
+Let's say a new application comes in with the following attributes:
+
+| Applicant | Good Credit Score | Employment Status | Home Ownership | Existing Debts |
+| --------- | ----------------- | ----------------- | -------------- | -------------- |
+| 6         | 1                 | 0                 | 1              | 1              |
+
+Our decision tree would predict that this applicant would _not_ have their loan application approved.
 
 ## Encode it
 
 You can see that the act of producing a decision tree is very simple, but the computations are rather repetitive.
 Let's have a computer do most of this work for us. Below is a python script will produce a decision tree from this same
-data set.
-
-Note that the underlying algrithm that the `sklearn.tree` uses to construct the decision tree might produce an outcome that
-is slightly different from what is outlined here due to order of operations and how it handles tiebreakers,
-but the relative performance of the produced classifier should be similar.
+data set and use it to predict the outcome of the new loan application:
 
 ```py
 import numpy as np
@@ -547,14 +504,14 @@ y = np.array([1, 0, 0, 1, 0])
 # Create a decision tree classifier instance
 # Criterion 'gini' refers to the Gini impurity
 # max_depth is set to 2 to limit the depth of the tree
-clf = DecisionTreeClassifier(criterion='gini', max_depth=2, random_state=0)
+classifier = DecisionTreeClassifier(criterion='gini', max_depth=2)
 
 # Fit the model to the data
-clf.fit(X, y)
+classifier.fit(X, y)
 
 # Print the tree as text
 tree_rules = export_text(
-  clf,
+  classifier,
   feature_names=[
     'Good Credit Score',
     'Employment Status',
@@ -563,6 +520,22 @@ tree_rules = export_text(
   ]
 )
 print(tree_rules)
+# |--- Employment Status <= 0.50
+# |   |--- class: 0
+# |--- Employment Status >  0.50
+# |   |--- Good Credit Score <= 0.50
+# |   |   |--- class: 0
+# |   |--- Good Credit Score >  0.50
+# |   |   |--- class: 1
+
+# New loan application
+new_data = np.array([[1, 0, 1, 1]])
+
+# Predict the label for the new data point
+predicted_label = classifier.predict(new_data)
+
+print("Predicted label:", predicted_label[0])
+# Predicted label: 0
 ```
 
 ## Conclusion
