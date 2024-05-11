@@ -509,6 +509,52 @@ wbsDiagram {
 {% endplantuml %}
 <!-- prettier-ignore-end -->
 
+## Encode it
+
+You can see that the act of producing a decision tree is very simple, but the computations are rather repetitive.
+Let's have a computer do most of this work for us. Below is a python script will produce a decision tree from this same
+data set.
+
+Note that the underlying algrithm that the `sklearn.tree` uses to construct the decision tree might produce an outcome that
+is slightly different from what is outlined here due to order of operations and how it handles tiebreakers,
+but the relative performance of the produced classifier should be similar.
+
+```py
+import numpy as np
+from sklearn.tree import DecisionTreeClassifier, export_text
+
+# Define the training data and labels
+X = np.array([
+    [1, 1, 1, 1],
+    [0, 1, 0, 1],
+    [1, 0, 0, 0],
+    [1, 1, 0, 0],
+    [0, 0, 0, 0]
+])
+
+y = np.array([1, 0, 0, 1, 0])
+
+# Create a decision tree classifier instance
+# Criterion 'gini' refers to the Gini impurity
+# max_depth is set to 2 to limit the depth of the tree
+clf = DecisionTreeClassifier(criterion='gini', max_depth=2, random_state=0)
+
+# Fit the model to the data
+clf.fit(X, y)
+
+# Print the tree as text
+tree_rules = export_text(
+  clf,
+  feature_names=[
+    'Good Credit Score',
+    'Employment Status',
+    'Home Ownership',
+    'Existing Debts'
+  ]
+)
+print(tree_rules)
+```
+
 ## Conclusion
 
 Decision trees are intuitive and widely used machine learning models that offer clear visual interpretations and straightforward decision-making pathways. Constructing a decision tree involves systematically splitting the data based on feature values that best separate the classes in the training dataset, aiming to achieve the purest possible subsets at each node.
