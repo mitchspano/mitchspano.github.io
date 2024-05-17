@@ -1,6 +1,7 @@
 ---
 layout: post
 mathjax: true
+tikzjax: true
 title: "Decoding PAC: The Backbone of Reliable Predictions"
 date: 2024-05-01 01:43:24 -0500
 ---
@@ -80,7 +81,53 @@ need to be perfect. Instead, it should be close enough to the true model. This i
 error rate, which should be small. In mathematical terms, this error rate is represented by
 $\epsilon$ (epsilon). Epsilon is a small positive number $ \epsilon \in [0,1]$ that sets the maximum allowable error rate for the hypothesis. A smaller epsilon means the hypothesis needs to be more accurate
 
-#### Mathematical Definition
+#### Probably ($\delta$)
+
+This part implies that while the hypothesis needs to be approximately correct, it does not need to be so under all possible scenarios, but rather with a high probability. In other words, there's still a chance, albeit small, that the hypothesis may not meet the error threshold set by epsilon.
+
+The delta ($\delta$) parameter specifies how confident we want to be in our hypothesis. It is the probability that the hypothesis might not meet the accuracy specified by epsilon. A smaller delta means higher confidence in the hypothesis being within the error threshold.
+
+### Mathematical Definitions
+
+#### Training Error
+
+Our hypothesis function $h$ is likely not going to be perfect every time. We define the
+_training error_ as the error the classifier incurs over the training sample:
+
+$$
+L_S(h) \stackrel{\text{def}}{=} \frac{|\{ i \in [m] : h(x_i) \neq y_i \}|}{m}
+$$
+
+This reads as:
+
+> The loss over the training set $S$ of the hypothesis function $f$ for $m$ data points
+> is equal by definition to the quantity of all data points that were not properly classified
+> by the hypothesis divided by $m$.
+
+It is simply the ratio of incorrectly classified points by the hypothesis function $h$.
+
+#### Realizability Assumption
+
+Let $\mathcal{D}$ be the unknown distribution that our sample set $S$ is drawn from,
+and $f$ the unknown labeling function we are trying to learn.
+
+The _realizability assumptions_ states that there exists $h^* \in \mathcal{H}$ such that
+$L_{(\mathcal{D}, f)}(h^*) = 0$.
+
+Simply put, a perfect hypothesis function exists.
+
+#### Probably Approximately Correct (PAC)
+
+The overall objective is to produce a function which decides how many examples
+or pieces of data $m$ we need to look at to be confident in the predictions made by our chosen
+method or formula. It uses two parameters, $\epsilon, \delta$ which help set the level of
+confidence and accuracy.
+
+If we can produce a algorithm that hones in on an method from the hypothesis class $\mathcal{H}$
+that we are confident ($\delta$) is quite accurate ($\epsilon$) after seeing enough examples,
+then the hypothesis class $\mathcal{H}$ is PAC learnable.
+
+Here is the formal (and very mathematically dense) definition of learnability:
 
 A hypothesis class $\mathcal{H}$ is PAC learnable if there exist a function
 $m_{\mathcal{H}} : (0,1)^2 \rightarrow \mathbb{N}$ and a learning algorithm with
@@ -91,5 +138,38 @@ respect to $\mathcal{H}$, $\mathcal{D}$, $f$, then when running the learning
 algorithm on $m \geq m_{\mathcal{H}}(\epsilon, \delta)$ of independently
 and identically distributed examples generated
 by $\mathcal{D}$ and labeled by $f$, the algorithm returns a hypothesis $h$ such
-that, with probability of at least $1 - \delta$ (over the choice of the examples)
-, $L(\mathcal{D}, f)(h) \leq \epsilon$.
+that, with probability of at least $1 - \delta$ (over the draws from $\mathcal{D}$)
+, $L_{(\mathcal{D}, f)}(h) \leq \epsilon$.
+
+## Learning a Field Goal
+
+Imagine you are a kicker on a football team. You are practicing.
+
+<script type="text/tikz">
+\begin{tikzpicture}
+  \draw[latex-latex] (-5,0) -- (5,0);
+  \draw[dashed] (-2, -1) -- (-2, 1);
+  \draw[dashed] (-1, -1) -- (-1, 1);
+  \draw[dashed] (1, -1) -- (1, 1);
+  \draw[dashed] (2, -1) -- (2, 1);
+
+  \fill[red] (-3.743, 0) circle (3pt);
+  \fill[red] (-2.977, 0) circle (3pt);
+  \fill[red] (-2.915, 0) circle (3pt);
+  \fill[red] (-2.548, 0) circle (3pt);
+  \fill[red] (-2.062, 0) circle (3pt);
+
+  \fill[blue] (-0.906, 0) circle (3pt);
+  \fill[blue] (-0.537, 0) circle (3pt);
+  \fill[blue] (0.428, 0) circle (3pt);
+  \fill[blue] (0.823, 0) circle (3pt);
+  \fill[blue] (0.906, 0) circle (3pt);
+
+  \fill[red] (2.062, 0) circle (3pt);
+  \fill[red] (2.269, 0) circle (3pt);
+  \fill[red] (2.796, 0) circle (3pt);
+  \fill[red] (3.496, 0) circle (3pt);
+  \fill[red] (3.718, 0) circle (3pt);
+
+\end{tikzpicture}
+</script>
