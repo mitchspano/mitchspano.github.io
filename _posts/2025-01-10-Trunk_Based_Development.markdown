@@ -225,13 +225,17 @@ c7 -[GREEN]u-> r2
 
 Releases -[hidden]d- main
 main -[hidden]d- Features
-center footer <color:black>Feature Development</color>
+
+legend
+  | Arrow | Description |
+  | <color:DARK_BLUE><size:18><&arrow-right></size></color>   | main |
+  | <color:LIGHT_BLUE><size:18><&arrow-right></size></color>  | feature |
+  | <color:GREEN><size:18><&arrow-right></size></color>   | release |
+endlegend
 
 @enduml
 {% endplantuml %}
 <!-- prettier-ignore-end -->
-
-Key aspects of trunk-based development are visualized in the above diagram:
 
 - **Short-lived feature branches:** The light blue lines represent short-lived
   feature branches branching off and merging back into `main`.
@@ -240,3 +244,45 @@ Key aspects of trunk-based development are visualized in the above diagram:
   line).
 - **Release from main:** Releases are created from specific points (commits) on
   `main` (represented by the green lines pointing to the release cards).
+
+## Why is Trunk-Based Development Challenging in Salesforce?
+
+While Trunk-Based Development offers significant advantages, implementing it
+within the Salesforce ecosystem presents unique challenges, both cultural and
+technical. A significant cultural hurdle stems from established practices. Many
+Salesforce teams are accustomed to a one-to-one mapping between a branch and an
+org (sandbox or production). This implies that each branch acts as a distinct
+and independent copy of the codebase. This practice creates multiple divergent
+sources of truth, which is fundamentally at odds with the core principle of
+Trunk-Based Development, where `main` serves as the single source of truth.
+Shifting away from this ingrained mindset requires a significant change in team
+workflows and understanding.
+
+Beyond the cultural aspects, there are also key technical requirements that must
+be addressed to successfully implement Trunk-Based Development in Salesforce.
+The most crucial of these is ensuring that the contents of the `main` branch are
+_always safely deployable_ to multiple Salesforce environments. This
+necessitates several key capabilities:
+
+- **Robust Environment Variable Management:** Because `main` is deployed to
+  different environments (e.g., development, QA, UAT, production), the codebase
+  must be able to adapt to environment-specific configurations. This means
+  having a robust mechanism for managing environment variables that control
+  things like API endpoints, email addresses, and other environment-specific
+  settings. These variables must be injected into the deployment process without
+  requiring changes to the codebase itself.
+
+- **Effective Feature Flagging:** In Trunk-Based Development, features are often
+  merged into `main` before they are fully ready for release. To prevent these
+  “half-baked” features from negatively impacting the user experience, teams
+  need a way to selectively enable or disable them. This is where feature flags
+  come into play. A feature flag is a mechanism that allows you to control the
+  visibility and behavior of a feature without deploying new code.
+  Unfortunately, Salesforce does not offer a robust, built-in feature flagging
+  mechanism. The closest equivalent is using custom permissions as if they were
+  feature flags. While functional, this approach requires careful management.
+
+Overcoming these cultural and technical challenges is essential for unlocking
+the full potential of Trunk-Based Development in Salesforce. The following
+sections will explore strategies and best practices for addressing these
+challenges and successfully implementing this powerful development model.
