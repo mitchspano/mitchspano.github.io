@@ -579,25 +579,25 @@ Here's an example of such a configuration file (using YAML):
 environment_values:
   QA:
     - file: workflows/MyWorkflow.workflow-meta.xml
-      xpath: /Workflow/outboundMessages/endpointUrl
+      xpath: //WorkflowOutboundMessage[fullName='Demo']/endpointUrl
       replacement: <endpointUrl>https://qa.example.com/endpoint</endpointUrl>
     - file: email/MyEmailAlert.email-meta.xml
-      xpath: /EmailAlert/recipients/email
-      replacement: <email>qa-alerts@example.com</email>
+      xpath: //WorkflowAlert[fullName='Demo']/senderAddress
+      replacement: <senderAddress>qa-alerts@example.com</senderAddress>
   UAT:
     - file: workflows/MyWorkflow.workflow-meta.xml
-      xpath: /Workflow/outboundMessages/endpointUrl
+      xpath: //WorkflowOutboundMessage[fullName='Demo']/endpointUrl
       replacement: <endpointUrl>https://uat.example.com/endpoint</endpointUrl>
     - file: email/MyEmailAlert.email-meta.xml
-      xpath: /EmailAlert/recipients/email
-      replacement: <email>uat-alerts@example.com</email>
+      xpath: //WorkflowAlert[fullName='Demo']/senderAddress
+      replacement: <senderAddress>uat-alerts@example.com</senderAddress>
   Production:
     - file: workflows/MyWorkflow.workflow-meta.xml
-      xpath: /Workflow/outboundMessages/endpointUrl
+      xpath: //WorkflowOutboundMessage[fullName='Demo']/endpointUrl
       replacement: <endpointUrl>https://production.example.com/endpoint</endpointUrl>
     - file: email/MyEmailAlert.email-meta.xml
-      xpath: /EmailAlert/recipients/email
-      replacement: <email>production-alerts@example.com</email>
+      xpath: //WorkflowAlert[fullName='Demo']/senderAddress
+      replacement: <senderAddress>production-alerts@example.com</senderAddress>
 ```
 
 This configuration clearly defines the environment-specific values for the
