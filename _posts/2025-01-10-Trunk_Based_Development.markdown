@@ -486,3 +486,79 @@ Overcoming these cultural and technical challenges is essential for unlocking
 the full potential of Trunk-Based Development in Salesforce. The following
 sections will explore strategies and best practices for addressing these
 challenges and successfully implementing this powerful development model.
+
+## Environment Variables
+
+Environment variables are crucial to the success of a trunk-based development
+workflow, as they allow the contents of a single branch (`main`) to be safely
+deployed to multiple target environments. Without a robust mechanism for
+managing environment-specific configurations, deploying the same codebase to
+development, QA, UAT, and production would be impossible.
+
+In the Salesforce context, "environment variables" often translate to XML
+modifications performed on the metadata before it is deployed to a target
+environment. Many metadata types require environment-specific settings,
+including workflow outbound message endpoint URLs, email alerts, connected app
+consumer secrets, and many more. Generally speaking, we need a solution that
+isn't bound to the schema of a specific metadata type but rather supports
+generic XML modifications.
+
+Salesforce's existing metadata string replacements are often insufficient to
+meet our needs. Some transformations are non-trivial string replacements,
+requiring multiple nodes within the XML structure to be modified. When using
+primitive string find and replace, issues can be encountered, particularly when
+dealing with whitespace and newlines within the XML. These subtle differences
+can lead to unexpected deployment failures or, worse, subtle bugs in production.
+
+The ideal solution involves a set of environment configuration files within the
+project, living within a `./environments` folder. The specific implementation
+details of the configuration file format are not critical – they could be JSON,
+YAML, Textproto, or any other suitable format. However, each instance of an
+environment replacement should contain four key pieces of information:
+
+- **Applicable environment identifier:** A label that identifies the target
+  environment (e.g., `QA`, `UAT`, `Production`).
+- **File path of interest:** The relative path to the metadata file within the
+  Salesforce project that needs modification.
+- **XPath to node of interest:** An XPath expression that precisely identifies
+  the XML node(s) to be modified.
+- **String replacement for the entire node:** The complete XML snippet that
+  should replace the identified node(s).
+
+When environment variables are set, the nodes within the designated file,
+identified by the XPath, are fully replaced by their corresponding value in the
+configuration file. This simple yet powerful mechanism enables support for all
+of Salesforce's XML-based metadata types and is easy to read and maintain.
+
+Here's an example of such a configuration file (using YAML):
+
+```yaml
+environment_values:
+  QA:
+    - file: workflows/MyWorkflow.workflow-meta.xml
+      xpath: /Workflow/outboundMessages/endpointUrl
+      replacement: <endpointUrl>https://qa.example.com/endpoint</endpointUrl>
+    - file: email/MyEmailAlert.email-meta.xml
+      xpath: /EmailAlert/recipients/email
+      replacement: <email>qa-alerts@example.com</email>
+  UAT:
+    - file: workflows/MyWorkflow.workflow-meta.xml
+      xpath: /Workflow/outboundMessages/endpointUrl
+      replacement: <endpointUrl>https://uat.example.com/endpoint</endpointUrl>
+    - file: email/MyEmailAlert.email-meta.xml
+      xpath: /EmailAlert/recipients/email
+      replacement: <email>uat-alerts@example.com</email>
+  Production:
+    - file: workflows/MyWorkflow.workflow-meta.xml
+      xpath: /Workflow/outboundMessages/endpointUrl
+      replacement: <endpointUrl>https://production.example.com/endpoint</endpointUrl>
+    - file: email/MyEmailAlert.email-meta.xml
+      xpath: /EmailAlert/recipients/email
+      replacement: <email>production-alerts@example.com</email>
+```
+
+This configuration clearly defines the environment-specific values for the
+specified metadata components, ensuring that each deployment uses the correct
+settings. This approach eliminates the need for manual modifications and
+significantly reduces the risk of errors associated with traditional string
+replacement methods.
