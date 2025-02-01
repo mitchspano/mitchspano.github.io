@@ -21,15 +21,15 @@ streamlined and efficient alternative: Trunk-Based Development.
 
 ### The Status Quo
 
-The prevailing branching strategy in many Salesforce development teams often
-resembles the following pattern: Developers work on individual features within
-dedicated feature branches, a practice that, in isolation, has merit. However,
-the issues arise when these branches interact with the broader environment
-structure. Typically, teams maintain three persistent branches: `QA`, `UAT`, and
-`main`. Each of these branches serves as an independent source of truth,
-directly tied to corresponding sandboxes and the production environment. This
-means the `QA` branch is the source for the QA sandbox, `UAT` for the UAT
-sandbox, and `main` for production.
+Many Salesforce development teams employ a branching strategy where each
+persistent branch corresponds directly to a specific environment. This is a
+common system landscape you're likely to encounter, though the specific names
+and number of branches/environments may vary. For instance, you might see
+branches labeled `QA`, `UAT`, and `main`, mirroring corresponding sandboxes and
+the production org. In this topology, `QA` serves as the source of truth for the
+QA sandbox, `UAT` for the UAT sandbox, and `main` for production. This setup,
+while prevalent, often introduces challenges related to merge conflicts,
+environment drift, and deployment complexity.
 
 The process of promoting changes up the environments involves merging feature
 branches into `QA`. Critically, when a pull request (PR) containing these
