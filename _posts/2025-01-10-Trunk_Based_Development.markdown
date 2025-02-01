@@ -332,9 +332,11 @@ release_next_branch -[#black]r-> release_active_branch : ""
 
 main_branch -[#orange]d-> QA
 main_branch -[#green]d-> QA
+main_branch -[#orange,dashed]-> UAT
 
 release_next_branch -[#orange]d-> UAT
 release_next_branch -[#green]d-> UAT
+release_next_branch -[#orange,dashed]-> Production
 
 release_active_branch -[#orange]d-> Production
 release_active_branch -[#green]d-> Production
@@ -345,6 +347,8 @@ legend
   | <color:black><size:18><&arrow-right></size></color>   | Pull request / Branch Creation |
   | <color:orange><size:18><&arrow-right></size></color>  | Validation |
   | <color:green><size:18><&arrow-right></size></color>   | Deployment |
+  | <color:orange><size:18>- <&arrow-right></size></color>   | Validation on merge |
+  
 endlegend
 
 @enduml
@@ -373,7 +377,61 @@ load on developers, freeing them to move on to their next task without the
 overhead of managing deployments. It also drastically reduces the risk of human
 error associated with manual processes.
 
-#### Hotfix Handling: A Safety Net
+#### Eager Validation
+
+In this workflow, whenever changes are merged into `main`, the contents of main
+are validated in the `UAT` sandbox. Similarly the contents of the `release_next`
+branch are validated in production upon merging. This eager validation is a key
+component of the trunk based development model for Salesforce; it ensures that
+as changes are promoted, they are valid within the next target environment. If
+this validation ever fails, a ticket should be created and assigned to the
+oncall engineer to investigate. This saves many headaches by proactively
+identifying issues with compilation or test execution multiple days before the
+deployment is scheduled to occur.
+
+#### Scheduled Branch promotion
+
+One powerful way to achieve this automation is through GitHub Actions, a
+platform for automating your development workflow directly within your
+repository.
+
+Here's an example YAML configuration that demonstrates how to schedule the
+promotion of changes from `main` to `release_next`:
+
+```yml
+name: Update Release Next Branch
+
+on:
+  schedule:
+    - cron: "0 14 * * 0,4" # Runs at 2 PM (14:00) UTC every Sunday (0) and Thursday (4)
+
+jobs:
+  update_release_next:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Contents in Salesforce
+       run: |
+        # perform validation in target org before merging
+
+      - name: Update Release Next
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout release_next
+          git reset --hard main # Or use git merge main if you prefer merging
+
+          git push -f origin release_next  # Use -f with caution! Consider git push origin release_next for merges.
+```
+
+#### Hotfix Handling
 
 Even in this automated system, there's room for flexibility. In rare cases where
 urgent fixes are needed, teams can still cherry-pick specific code changes into
