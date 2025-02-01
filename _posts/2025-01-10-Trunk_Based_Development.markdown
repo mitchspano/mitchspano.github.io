@@ -54,7 +54,7 @@ in this post.
 {% plantuml %}
 @startuml
 
-scale 1.5
+scale 1.25
 skinparam sequenceArrowThickness 2.5
 
 skinparam cloud<<cloudStyle>> {
@@ -70,20 +70,25 @@ skinparam card<<branch>> {
 
 hide stereotype
 
-cloud Scratch <<cloudStyle>>
-cloud QA <<cloudStyle>>
-cloud UAT <<cloudStyle>>
-cloud Production <<cloudStyle>>
+folder "Developer's Responsibility" {
+  cloud Scratch <<cloudStyle>>
 
-card Feature_branch as "<&fork> **feature/xyz**" <<branch>>
-card QA_branch as "<&fork> **QA**" <<branch>>
-card UAT_branch as "<&fork> **UAT**" <<branch>>
-card main_branch as "<&fork> **main**" <<branch>>
+  card Feature_branch as "<&fork> **feature/xyz**" <<branch>>
+  card QA_branch as "<&fork> **QA**" <<branch>>
+  card UAT_branch as "<&fork> **UAT**" <<branch>>
+  card main_branch as "<&fork> **main**" <<branch>>
 
-Scratch -[#black,dashed]u-> Feature_branch : " commit"
-Feature_branch -[#black]r-> QA_branch : "merge"
-QA_branch -[#black]r-> UAT_branch : "🍒⛏️"
-UAT_branch -[#black]r-> main_branch : "🍒⛏️"
+  Scratch -[#black,dashed]d-> Feature_branch : " commit"
+  Feature_branch -[#black]r-> QA_branch : "merge"
+  QA_branch -[#black]r-> UAT_branch : "🍒⛏️"
+  UAT_branch -[#black]r-> main_branch : "🍒⛏️"
+}
+
+folder "System's Responsibility" {
+  cloud QA <<cloudStyle>>
+  cloud UAT <<cloudStyle>>
+  cloud Production <<cloudStyle>>
+}
 
 QA_branch -[#orange]d-> QA
 QA_branch -[#green]d-> QA
@@ -105,16 +110,26 @@ endlegend
 {% endplantuml %}
 <!-- prettier-ignore-end -->
 
+In the traditional paradigm, the developer is responsible for managing the
+promotion of components repeatedly across multiple branches. The only thing that
+the system automatically performs is the validation and deployment to the
+respective Salesforce environments.
+
 ### Issues with the Status Quo
 
 While the described branching strategy might appear organized at first glance,
 it introduces several significant issues that can severely hamper a Salesforce
-development team's efficiency and reliability. One of the most glaring problems
-is the constant repetition of steps. Promoting changes from development to QA,
-then to UAT, and finally to production requires developers to perform the same
-actions multiple times. They must manually invoke the cherry-pick process for
-every change moving between branches. This manual intervention is not only
-time-consuming but also prone to human error.
+development team's efficiency and reliability.
+
+#### Repeated Steps
+
+One of the most glaring problems is the constant repetition of steps. Promoting
+changes from development to QA, then to UAT, and finally to production requires
+developers to perform the same actions multiple times. They must manually invoke
+the cherry-pick process for every change moving between branches. This manual
+intervention is not only time-consuming but also prone to human error.
+
+#### Environment Drift
 
 This manual cherry-picking process also leaves the project ripe for creating
 drift between environments. Because changes are manually selected and applied to
@@ -124,6 +139,8 @@ significant differences between the QA, UAT, and production environments.
 Reconciling this drift becomes a major undertaking, often requiring extensive
 debugging and rework, particularly when trying to diagnose production issues
 that can't be easily reproduced in lower environments.
+
+#### Manual Selection and Promotion
 
 Finally, all of these challenges are amplified substantially when multiple
 related components need to be promoted together from one branch to another.
@@ -160,7 +177,7 @@ management and cherry-picking. This is illustrated in the diagram below:
 {% plantuml %}
 @startuml
 
-scale 1.3
+scale 1.25
 skinparam sequenceArrowThickness 3.5
 
 !define DARK_BLUE #286090
@@ -178,7 +195,7 @@ together main {
   circle c7 as " "
   circle c8 as " "
   circle c9 as " "
-  circle end as "current" 
+  circle end as "HEAD" 
 }
 
 together Features {
@@ -249,14 +266,20 @@ endlegend
 
 While Trunk-Based Development offers significant advantages, implementing it
 within the Salesforce ecosystem presents unique challenges, both cultural and
-technical. A significant cultural hurdle stems from established practices. Many
-Salesforce teams are accustomed to a one-to-one mapping between a branch and an
-org (sandbox or production). This implies that each branch acts as a distinct
-and independent copy of the codebase. This practice creates multiple divergent
-sources of truth, which is fundamentally at odds with the core principle of
-Trunk-Based Development, where `main` serves as the single source of truth.
-Shifting away from this ingrained mindset requires a significant change in team
-workflows and understanding.
+technical.
+
+### Cultural Challenges
+
+A significant cultural hurdle stems from established practices. Many Salesforce
+teams are accustomed to a one-to-one mapping between a branch and an org
+(sandbox or production). This implies that each branch acts as a distinct and
+independent copy of the codebase. This practice creates multiple divergent
+sources of truth, which is fundamentally at odds with the core principles of how
+engineers in other software development teams utilize source control. Shifting
+away from this ingrained mindset requires a significant change in team workflows
+and understanding.
+
+### Technical Challenges
 
 Beyond the cultural aspects, there are also key technical requirements that must
 be addressed to successfully implement Trunk-Based Development in Salesforce.
@@ -264,25 +287,122 @@ The most crucial of these is ensuring that the contents of the `main` branch are
 _always safely deployable_ to multiple Salesforce environments. This
 necessitates several key capabilities:
 
-- **Robust Environment Variable Management:** Because `main` is deployed to
-  different environments (e.g., development, QA, UAT, production), the codebase
-  must be able to adapt to environment-specific configurations. This means
-  having a robust mechanism for managing environment variables that control
-  things like API endpoints, email addresses, and other environment-specific
-  settings. These variables must be injected into the deployment process without
-  requiring changes to the codebase itself.
+#### Robust Environment Variable Management
 
-- **Effective Feature Flagging:** In Trunk-Based Development, features are often
-  merged into `main` before they are fully ready for release. To prevent these
-  “half-baked” features from negatively impacting the user experience, teams
-  need a way to selectively enable or disable them. This is where feature flags
-  come into play. A feature flag is a mechanism that allows you to control the
-  visibility and behavior of a feature without deploying new code.
-  Unfortunately, Salesforce does not offer a robust, built-in feature flagging
-  mechanism. The closest equivalent is using custom permissions as if they were
-  feature flags. While functional, this approach requires careful management.
+Because `main` is deployed to different environments (e.g., development, QA,
+UAT, production), the codebase must be able to adapt to environment-specific
+configurations. This means having a robust mechanism for managing environment
+variables that control things like API endpoints, email addresses, and other
+environment-specific settings. These variables must be injected into the
+deployment process without requiring changes to the codebase itself.
+
+#### Effective Feature Flagging
+
+In Trunk-Based Development, features are often merged into `main` before they
+are fully ready for release. To prevent these “half-baked” features from
+negatively impacting the user experience, teams need a way to selectively enable
+or disable them. Changes which are not ready for prime-time are to be safely
+deployed to the target application environment, but hidden from visibility or
+throw a nicely rendered error until the feature is ready.
 
 Overcoming these cultural and technical challenges is essential for unlocking
 the full potential of Trunk-Based Development in Salesforce. The following
 sections will explore strategies and best practices for addressing these
 challenges and successfully implementing this powerful development model.
+
+## The Golden State
+
+The ultimate goal, the "Golden State" we envision with Trunk-Based Development
+and robust automation, is a system where engineers merge their code to the
+`main` branch only once. From that point forward, the system automatically takes
+over, handling the promotion of those changes to higher environments on a
+pre-determined cadence, such as weekly.
+
+What does this look like?
+
+<!-- prettier-ignore-start -->
+{% plantuml %}
+@startuml
+
+scale 1.25
+skinparam sequenceArrowThickness 2.5
+
+skinparam cloud<<cloudStyle>> {
+  BackgroundColor #3baed3
+  FontColor #ffffff
+}
+
+skinparam card<<branch>> {
+  BackgroundColor #FF0000
+  FontColor #ffffff
+}
+
+
+hide stereotype
+
+folder "Developer's Responsibility" {
+  cloud Scratch <<cloudStyle>>
+  card Feature_branch as "<&fork> **feature/xyz**" <<branch>>
+}
+
+folder "System's Responsibility" {
+  cloud QA <<cloudStyle>>
+  cloud UAT <<cloudStyle>>
+  cloud Production <<cloudStyle>>
+
+  card main_branch as "<&fork> **main**" <<branch>>
+  card release_next_branch as "<&fork> **release_next** \n (twice per week)" <<branch>>
+  card release_active_branch as "<&fork> **release_active** \n (once per week)" <<branch>>
+}
+
+Scratch -[#black,dashed]u-> Feature_branch : " commit"
+Feature_branch -[#black]r-> main_branch : ""
+main_branch -[#black]r-> release_next_branch: ""
+release_next_branch -[#black]r-> release_active_branch : ""
+
+main_branch -[#orange]d-> QA
+main_branch -[#green]d-> QA
+
+release_next_branch -[#orange]d-> UAT
+release_next_branch -[#green]d-> UAT
+
+release_active_branch -[#orange]d-> Production
+release_active_branch -[#green]d-> Production
+
+
+legend
+  | Arrow | Description |
+  | <color:black><size:18><&arrow-right></size></color>   | Pull request / Branch Creation |
+  | <color:orange><size:18><&arrow-right></size></color>  | Validation |
+  | <color:green><size:18><&arrow-right></size></color>   | Deployment |
+endlegend
+
+@enduml
+{% endplantuml %}
+<!-- prettier-ignore-end -->
+
+The "Golden State" depicted above resembles our previous diagram but shifts the
+emphasis from manual actions by developers to automated processes managed by the
+system.
+
+Here's the key difference: after a developer merges their feature branch into
+`main`, the system takes over. Features are automatically promoted through QA,
+UAT, and finally production on a pre-defined schedule. This automated promotion
+occurs by creating a new `release_next` branch from `main` twice per week. Then,
+once per week, a new `realease_active` branch is created from `release_next`.
+
+This **"merge once, then walk away"** paradigm allows developers to focus on
+what they do best: building features. They no longer need to worry about the
+complexities of manual deployments, regular cherry-picking, or reconciling
+environment drift. The automated promotion significantly reduces the cognitive
+load on developers, freeing them to move on to their next task without the
+overhead of managing deployments. It also drastically reduces the risk of human
+error associated with manual processes.
+
+#### Hotfix Handling: A Safety Net
+
+Even in this automated system, there's room for flexibility. In rare cases where
+urgent fixes are needed, teams can still cherry-pick specific code changes into
+appropriate branches/environments (e.g., a hotfix for a critical bug). This
+"hotfix" mechanism acts as a safety net, allowing for rapid responses to
+unexpected issues.
