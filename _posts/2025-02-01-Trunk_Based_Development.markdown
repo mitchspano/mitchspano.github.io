@@ -639,8 +639,9 @@ contexts:
 ```java
 if (FeatureManagement.isFeatureEnabled('FF_NewCustomerPortal')) {
     // Code to execute when the feature is enabled
-    CustomerPortalController controller = new CustomerPortalController();
-    PageReference pageRef = controller.start();
+    PageReference newPage = new PageReference('/newCustomerPortal');
+    newPage.getParameters().put('id', controller.getId());
+    newPage.setRedirect(true);
     return pageRef;
 } else {
     // Code to execute when the feature is disabled
