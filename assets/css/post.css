@@ -1,0 +1,34 @@
+.plantuml-container {
+  display: flex;
+  justify-content: center; /* Horizontally center the content */
+  align-items: center; /* Vertically align the content */
+  width: 100%; /* Make the container take the full width */
+  overflow: visible; /* Allow the content to overflow without scrollbars */
+  margin: 20px 0; /* Default margin around the container */
+}
+
+.plantuml-container svg {
+  width: 100%; /* Make the SVG scale to the full width of its container */
+  max-width: none; /* Remove any maximum width constraints */
+  height: auto; /* Maintain the aspect ratio */
+  display: block;
+  margin: 0 auto; /* Center the SVG horizontally */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .plantuml-container {
+    display: block; /* Change from flex to block for better scroll behavior */
+    width: auto; /* Ensure the container wraps tightly around its content */
+    overflow-x: auto; /* Allow horizontal scrolling */
+    overflow-y: hidden; /* Prevent vertical scrolling */
+    white-space: nowrap; /* Prevent line breaks for wide content */
+  }
+
+  .plantuml-container svg {
+    display: inline-block; /* Keep the SVG as an inline block element */
+    transform: scale(0.6); /* Scale down the SVG to 60% */
+    transform-origin: top left; /* Ensure scaling is from the top-left corner */
+    margin: 0; /* Remove extra margins from the SVG */
+  }
+}
