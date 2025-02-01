@@ -2,7 +2,7 @@
 layout: post
 mathjax: true
 title: "There Can Be Only One (Branch): Trunk-Based Development for Salesforce"
-date: 2025-01-10 01:43:24 -0500
+date: 2025-02-01 01:43:24 -0500
 ---
 
 ## Trunk Based Development
@@ -276,6 +276,49 @@ endlegend
 - **Release from main:** Releases are created from specific points (commits) on
   `main` (represented by the green lines pointing to the release cards).
 
+### Quality
+
+In addition to reduced steps and simplified deployments, a natural consequence
+of trunk-based development practices is often higher quality software. This
+improvement stems from a shift in developer mindset and increased ownership.
+
+When developers know that the contents of their pull request (PR) will soon be
+deployed to production, they naturally tend to make higher-quality changes. The
+immediacy of the deployment creates a stronger sense of responsibility for the
+code they are committing. Knowing that their work will be live and potentially
+impacting users shortly after it's merged encourages developers to be more
+thorough in their testing and more attentive to detail. They are less likely to
+cut corners or push code that they aren't confident in.
+
+This "production proximity" effect is a powerful motivator for quality.
+Developers are more likely to:
+
+- **Write better tests:** Knowing that their code will be in production soon
+  incentivizes developers to write more comprehensive unit and integration
+  tests. They want to be confident that their changes won't break existing
+  functionality or introduce new bugs.
+
+- **Perform more thorough code reviews:** The emphasis on merging frequently and
+  deploying rapidly encourages more focused and effective code reviews.
+  Reviewers are more likely to scrutinize changes when they know they will be
+  live soon.
+
+- **Pay closer attention to edge cases:** Developers are more likely to consider
+  edge cases and potential problems when they know their code is going to
+  production quickly. This proactive approach leads to more robust and reliable
+  software.
+
+- **Refactor more frequently:** The constant integration and deployment cycle
+  makes it easier to identify and address technical debt. Small, frequent
+  refactoring becomes a natural part of the development process, leading to
+  cleaner and more maintainable code.
+
+In essence, trunk-based development fosters a culture of quality by making
+developers feel more connected to the production environment. This increased
+sense of ownership and responsibility translates into higher-quality code, fewer
+bugs, and ultimately, a better product.
+
+
 ## The Golden State
 
 The ultimate goal, the "Golden State" we envision with Trunk-Based Development
@@ -438,48 +481,6 @@ urgent fixes are needed, teams can still cherry-pick specific code changes into
 appropriate branches/environments (e.g., a hotfix for a critical bug). This
 "hotfix" mechanism acts as a safety net, allowing for rapid responses to
 unexpected issues.
-
-## Quality
-
-In addition to reduced steps and simplified deployments, a natural consequence
-of trunk-based development practices is often higher quality software. This
-improvement stems from a shift in developer mindset and increased ownership.
-
-When developers know that the contents of their pull request (PR) will soon be
-deployed to production, they naturally tend to make higher-quality changes. The
-immediacy of the deployment creates a stronger sense of responsibility for the
-code they are committing. Knowing that their work will be live and potentially
-impacting users shortly after it's merged encourages developers to be more
-thorough in their testing and more attentive to detail. They are less likely to
-cut corners or push code that they aren't confident in.
-
-This "production proximity" effect is a powerful motivator for quality.
-Developers are more likely to:
-
-- **Write better tests:** Knowing that their code will be in production soon
-  incentivizes developers to write more comprehensive unit and integration
-  tests. They want to be confident that their changes won't break existing
-  functionality or introduce new bugs.
-
-- **Perform more thorough code reviews:** The emphasis on merging frequently and
-  deploying rapidly encourages more focused and effective code reviews.
-  Reviewers are more likely to scrutinize changes when they know they will be
-  live soon.
-
-- **Pay closer attention to edge cases:** Developers are more likely to consider
-  edge cases and potential problems when they know their code is going to
-  production quickly. This proactive approach leads to more robust and reliable
-  software.
-
-- **Refactor more frequently:** The constant integration and deployment cycle
-  makes it easier to identify and address technical debt. Small, frequent
-  refactoring becomes a natural part of the development process, leading to
-  cleaner and more maintainable code.
-
-In essence, trunk-based development fosters a culture of quality by making
-developers feel more connected to the production environment. This increased
-sense of ownership and responsibility translates into higher-quality code, fewer
-bugs, and ultimately, a better product.
 
 ## Why is Trunk-Based Development Challenging in Salesforce?
 
