@@ -51,10 +51,13 @@ controlled, introduces significant overhead and risk, as we'll explore further
 in this post.
 
 <!-- prettier-ignore-start -->
+<div class="plantuml-container">
+<!-- prettier-ignore-end -->
+<!-- prettier-ignore-start -->
 {% plantuml %}
 @startuml
 
-scale 1.25
+scale 1.5
 skinparam sequenceArrowThickness 2.5
 
 skinparam cloud<<cloudStyle>> {
@@ -110,6 +113,10 @@ endlegend
 {% endplantuml %}
 <!-- prettier-ignore-end -->
 
+<!-- prettier-ignore-start -->
+</div>
+<!-- prettier-ignore-end -->
+
 In the traditional paradigm, the developer is responsible for managing the
 promotion of components repeatedly across multiple branches. The only thing that
 the system automatically performs is the validation and deployment to the
@@ -153,7 +160,7 @@ increases the risk of deploying incomplete or inconsistent changes, further
 exacerbating the problem of environment drift and increasing the likelihood of
 deployment failures.
 
-## Trunk-Based Development
+## What is Trunk-Based Development?
 
 Trunk-Based Development presents a significantly different approach to managing
 source code and deployments, offering numerous advantages over the traditional
@@ -174,10 +181,13 @@ greatly simplifies the release process, eliminating the need for complex branch
 management and cherry-picking. This is illustrated in the diagram below:
 
 <!-- prettier-ignore-start -->
+<div class="plantuml-container">
+<!-- prettier-ignore-end -->
+<!-- prettier-ignore-start -->
 {% plantuml %}
 @startuml
 
-scale 1.25
+scale 1.5
 skinparam sequenceArrowThickness 3.5
 
 !define DARK_BLUE #286090
@@ -254,6 +264,10 @@ endlegend
 {% endplantuml %}
 <!-- prettier-ignore-end -->
 
+<!-- prettier-ignore-start -->
+</div>
+<!-- prettier-ignore-end -->
+
 - **Short-lived feature branches:** The light blue lines represent short-lived
   feature branches branching off and merging back into `main`.
 - **Direct merge to main:** Feature branches are merged directly back into
@@ -262,70 +276,26 @@ endlegend
 - **Release from main:** Releases are created from specific points (commits) on
   `main` (represented by the green lines pointing to the release cards).
 
-## Why is Trunk-Based Development Challenging in Salesforce?
-
-While Trunk-Based Development offers significant advantages, implementing it
-within the Salesforce ecosystem presents unique challenges, both cultural and
-technical.
-
-### Cultural Challenges
-
-A significant cultural hurdle stems from established practices. Many Salesforce
-teams are accustomed to a one-to-one mapping between a branch and an org
-(sandbox or production). This implies that each branch acts as a distinct and
-independent copy of the codebase. This practice creates multiple divergent
-sources of truth, which is fundamentally at odds with the core principles of how
-engineers in other software development teams utilize source control. Shifting
-away from this ingrained mindset requires a significant change in team workflows
-and understanding.
-
-### Technical Challenges
-
-Beyond the cultural aspects, there are also key technical requirements that must
-be addressed to successfully implement Trunk-Based Development in Salesforce.
-The most crucial of these is ensuring that the contents of the `main` branch are
-_always safely deployable_ to multiple Salesforce environments. This
-necessitates several key capabilities:
-
-#### Robust Environment Variable Management
-
-Because `main` is deployed to different environments (e.g., development, QA,
-UAT, production), the codebase must be able to adapt to environment-specific
-configurations. This means having a robust mechanism for managing environment
-variables that control things like API endpoints, email addresses, and other
-environment-specific settings. These variables must be injected into the
-deployment process without requiring changes to the codebase itself.
-
-#### Effective Feature Flagging
-
-In Trunk-Based Development, features are often merged into `main` before they
-are fully ready for release. To prevent these “half-baked” features from
-negatively impacting the user experience, teams need a way to selectively enable
-or disable them. Changes which are not ready for prime-time are to be safely
-deployed to the target application environment, but hidden from visibility or
-throw a nicely rendered error until the feature is ready.
-
-Overcoming these cultural and technical challenges is essential for unlocking
-the full potential of Trunk-Based Development in Salesforce. The following
-sections will explore strategies and best practices for addressing these
-challenges and successfully implementing this powerful development model.
-
 ## The Golden State
 
 The ultimate goal, the "Golden State" we envision with Trunk-Based Development
-and robust automation, is a system where engineers merge their code to the
-`main` branch only once. From that point forward, the system automatically takes
-over, handling the promotion of those changes to higher environments on a
-pre-determined cadence, such as weekly.
+and robust automation within tghe Salesforce ecosystem, is a system where
+engineers merge their code to the `main` branch only once. From that point
+forward, the system automatically takes over, handling the promotion of those
+changes to higher environments on a pre-determined cadence, such as weekly.
 
 What does this look like?
 
 <!-- prettier-ignore-start -->
+<div class="plantuml-container">
+<!-- prettier-ignore-end -->
+<!-- prettier-ignore-start -->
 {% plantuml %}
 @startuml
 
-scale 1.25
+scale 1.5
 skinparam sequenceArrowThickness 2.5
+
 
 skinparam cloud<<cloudStyle>> {
   BackgroundColor #3baed3
@@ -381,6 +351,10 @@ endlegend
 {% endplantuml %}
 <!-- prettier-ignore-end -->
 
+<!-- prettier-ignore-start -->
+</div>
+<!-- prettier-ignore-end -->
+
 The "Golden State" depicted above resembles our previous diagram but shifts the
 emphasis from manual actions by developers to automated processes managed by the
 system.
@@ -406,3 +380,51 @@ urgent fixes are needed, teams can still cherry-pick specific code changes into
 appropriate branches/environments (e.g., a hotfix for a critical bug). This
 "hotfix" mechanism acts as a safety net, allowing for rapid responses to
 unexpected issues.
+
+## Why is Trunk-Based Development Challenging in Salesforce?
+
+While Trunk-Based Development offers significant advantages, implementing it
+within the Salesforce ecosystem presents unique challenges, both cultural and
+technical.
+
+### Cultural Challenges
+
+A significant cultural hurdle stems from established practices. Many Salesforce
+teams are accustomed to a one-to-one mapping between a branch and an org
+(sandbox or production). This implies that each branch acts as a distinct and
+independent copy of the codebase. This practice creates multiple divergent
+sources of truth, which is fundamentally at odds with the core principles of how
+engineers in other software development teams utilize source control. Shifting
+away from this ingrained mindset requires a significant change in team workflows
+and understanding.
+
+### Technical Challenges
+
+Beyond the cultural aspects, there are also key technical requirements that must
+be addressed to successfully implement Trunk-Based Development in Salesforce.
+The most crucial of these is ensuring that the contents of the `main` branch are
+_always safely deployable_ to multiple Salesforce environments. This
+necessitates several key capabilities:
+
+#### Robust Environment Variable Management
+
+Because `main` is deployed to different environments (e.g., development, QA,
+UAT, production), the codebase must be able to adapt to environment-specific
+configurations. This means having a robust mechanism for managing environment
+variables that control things like API endpoints, email addresses, and other
+environment-specific settings. These variables must be injected into the
+deployment process without requiring changes to the codebase itself.
+
+#### Effective Feature Flagging
+
+In Trunk-Based Development, features are often merged into `main` before they
+are fully ready for release. To prevent these “half-baked” features from
+negatively impacting the user experience, teams need a way to selectively enable
+or disable them. Changes which are not ready for prime-time are to be safely
+deployed to the target application environment, but hidden from visibility or
+throw a nicely rendered error until the feature is ready.
+
+Overcoming these cultural and technical challenges is essential for unlocking
+the full potential of Trunk-Based Development in Salesforce. The following
+sections will explore strategies and best practices for addressing these
+challenges and successfully implementing this powerful development model.
