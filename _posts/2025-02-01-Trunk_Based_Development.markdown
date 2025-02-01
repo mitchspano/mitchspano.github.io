@@ -241,7 +241,7 @@ f2 -[LIGHT_BLUE]r-> c3
 c4 -[LIGHT_BLUE]d-> f3
 f3 -[LIGHT_BLUE]r-> f4
 f4 -[LIGHT_BLUE]r-> f5
-f5 -[LIGHT_BLUE]r-> c7
+f5 -[LIGHT_BLUE]r-> c6
 
 c7 -[LIGHT_BLUE]d-> f6
 f6 -[LIGHT_BLUE]r-> f7
