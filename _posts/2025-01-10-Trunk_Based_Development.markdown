@@ -720,3 +720,31 @@ importantly, easy rollbacks should something go wrong. Deactivating a feature is
 as simple as removing the permission set assignment. This provides a clean and
 controlled way to manage feature releases and minimizes the impact of any
 unforeseen issues.
+
+## Conclusion
+
+Trunk-based development offers a compelling alternative to traditional branching
+strategies in Salesforce development. By embracing frequent integration,
+automated deployments, and feature flagging, teams can significantly improve
+their development velocity, reduce risk, and enhance software quality. The
+"merge once, then walk away" paradigm empowers developers to focus on building
+great features, while the system handles the complexities of deployment and
+promotion. While implementing trunk-based development within the Salesforce
+ecosystem presents unique challenges, the benefits far outweigh the initial
+effort required to overcome them.
+
+The shift to trunk-based development requires a cultural change, a commitment to
+automation, and careful planning. It's not an overnight transformation. However,
+the journey towards a more streamlined and efficient development process begins
+with a single step.
+
+I challenge you to consider how trunk-based development could benefit your
+Salesforce team. Start small. Perhaps pilot the approach with a less critical
+project or a single team. Experiment with the techniques described in this post.
+Explore different feature flagging strategies, and refine your environment
+variable management. Don't be afraid to iterate and adjust your approach as you
+learn what works best for your organization.
+
+The potential rewards are substantial: faster release cycles, improved code
+quality, and happier developers. Embrace the trunk, and unlock the full
+potential of your Salesforce development team.
