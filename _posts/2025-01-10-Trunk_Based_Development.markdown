@@ -562,3 +562,119 @@ specified metadata components, ensuring that each deployment uses the correct
 settings. This approach eliminates the need for manual modifications and
 significantly reduces the risk of errors associated with traditional string
 replacement methods.
+
+## Feature Flagging
+
+When working in a trunk-based development workflow, any metadata checked into
+the repository _will_ eventually go to production. This means that many features
+will be "half-baked" for a while, deployed but inactive, until they are ready
+for use. This is where feature flagging comes into play.
+
+Our objective is to decouple the business go-live from the technical go-live.
+Components should be deployed to the target Salesforce environment and sit
+dormant, then activated at a later date, independent of the deployment schedule.
+This allows for continuous integration and continuous delivery, even when
+features are not yet ready for prime time.
+
+The primary strategy for achieving this is to gate the injection point for the
+feature you are working on behind a custom permission. The custom permission
+acts as a feature flag. A recommended naming convention is to prefix custom
+permissions used as feature flags with `FF_`, for example,
+`FF_NewCustomerPortal` or `FF_EnhancedSearch`. This clear naming convention
+makes it easy to identify feature flags within your Salesforce org.
+
+Your application logic must be written in such a way that behavior is bifurcated
+based on whether the user has the custom permission assigned. This can be done
+in Apex, Visualforce, Lightning Web Components, or any other part of your
+Salesforce application.
+
+Here are some examples of how you might implement feature flagging in different
+contexts:
+
+**Apex:**
+
+```java
+if (FeatureManagement.isFeatureEnabled('FF_NewCustomerPortal')) {
+    // Code to execute when the feature is enabled
+    CustomerPortalController controller = new CustomerPortalController();
+    PageReference pageRef = controller.start();
+    return pageRef;
+} else {
+    // Code to execute when the feature is disabled
+    return Page.OldCustomerPortal;
+}
+```
+
+**Lightning Web Component (LWC) JavaScript:**
+
+```javascript
+import { LightningElement, api } from "lwc";
+import hasPermission from "@salesforce/userPermission/FF_EnhancedSearch";
+
+export default class MyComponent extends LightningElement {
+  @api recordId;
+
+  get showNewFeature() {
+    return hasPermission;
+  }
+}
+```
+
+**Lightning Web Component (LWC) HTML:**
+
+```html
+<template>
+  <template if:true="{showNewFeature}">
+    <c-enhanced-search record-id="{recordId}"></c-enhanced-search>
+  </template>
+  <template if:false="{showNewFeature}">
+    <c-basic-search record-id="{recordId}"></c-basic-search>
+  </template>
+</template>
+```
+
+We prefer using custom permissions for feature flagging because they offer broad
+accessibility throughout the entire Salesforce platform. This versatility allows
+us to control feature visibility and behavior in a multitude of contexts,
+ensuring consistent and reliable feature gating. Custom permissions can be
+checked in a wide range of places, including:
+
+- **Apex:** As shown in the previous example, Apex code can easily check for the
+  presence of a custom permission using the
+  `FeatureManagement.isFeatureEnabled()` method or by querying the
+  `PermissionSetAssignment` and `PermissionSet` objects directly. This allows
+  for dynamic control of Apex logic based on the feature flag.
+
+- **Lightning Web Components (LWC):** Both JavaScript and HTML within LWC can
+  utilize custom permissions. JavaScript can use the
+  `@salesforce/userPermission` wire adapter or similar methods to determine if a
+  user has a specific permission. HTML templates can use the `if:true` and
+  `if:false` directives in conjunction with the permission check to
+  conditionally render elements.
+
+- **Page Builder Visibility Criteria:** Lightning App Builder allows you to set
+  visibility criteria for components based on permissions. This means you can
+  show or hide entire sections of a page based on feature flags, providing a
+  seamless user experience.
+
+- **Flows:** Flows can use Decision elements to branch logic based on whether a
+  user has a specific custom permission. This makes it possible to create
+  dynamic flows that adapt to different feature sets.
+
+- **Validation Rules:** You could even use custom permissions in validation
+  rules to enforce different data entry rules based on feature access.
+
+This pervasive availability of custom permissions across the Salesforce platform
+makes them an ideal choice for feature flagging. They provide a centralized and
+consistent way to manage feature access.
+
+When this is properly implemented, the activation event becomes the assignment
+of a permission set containing the custom permission. You would create a
+permission set, for example, `NewCustomerPortal_Access`, and add the
+`FF_NewCustomerPortal` custom permission to it. When the business is ready to
+launch the feature, simply assign the `NewCustomerPortal_Access` permission set
+to the appropriate users. This enables easy deployments and, just as
+importantly, easy rollbacks should something go wrong. Deactivating a feature is
+as simple as removing the permission set assignment. This provides a clean and
+controlled way to manage feature releases and minimizes the impact of any
+unforeseen issues.
