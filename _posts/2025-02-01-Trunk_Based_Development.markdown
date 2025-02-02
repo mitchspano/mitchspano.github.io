@@ -8,16 +8,16 @@ date: 2025-02-01 01:43:24 -0500
 ## Trunk Based Development
 
 In the Salesforce development world, a common practice has been to rely on
-persistent, long-lived branches for non-production environments like
-development, testing, and staging. While seemingly straightforward, this
-branching strategy often introduces a host of challenges that can significantly
-hinder development velocity and release cadence. From the ever-present threat of
-merge conflicts and the insidious creep of environment drift, to the
-complexities of deployment and the frustrating repetition of steps within the
-development pipeline, these persistent branches can become a major bottleneck
-for your Salesforce development team. This post explores the pitfalls of this
-traditional branching approach within Salesforce and introduces a more
-streamlined and efficient alternative: Trunk-Based Development.
+persistent, long-lived branches for non-production environments like QA and UAT
+While seemingly straightforward, this branching strategy often introduces a host
+of challenges that can significantly hinder development velocity and release
+cadence. From the ever-present threat of merge conflicts and the insidious creep
+of environment drift, to the complexities of deployment and the frustrating
+repetition of steps within the development pipeline, these persistent branches
+can become a major bottleneck for your Salesforce development team. This post
+explores the pitfalls of this traditional branching approach within Salesforce
+and introduces a more streamlined and efficient alternative: Trunk-Based
+Development.
 
 ### The Status Quo
 
@@ -53,6 +53,7 @@ in this post.
 <!-- prettier-ignore-start -->
 <div class="plantuml-container">
 <!-- prettier-ignore-end -->
+
 <!-- prettier-ignore-start -->
 {% plantuml %}
 @startuml
@@ -115,6 +116,7 @@ endlegend
 
 <!-- prettier-ignore-start -->
 </div>
+
 <!-- prettier-ignore-end -->
 
 In the traditional paradigm, the developer is responsible for managing the
@@ -174,15 +176,15 @@ integration ensures that the main branch remains stable and always reflects the
 latest state of the project.
 
 Releases in Trunk-Based Development are handled differently as well. Instead of
-branching off for each release, a specific commit on `main` is chosen as the
-release point at a scheduled cadence. This means that a historical point in the
-commit history of `main` becomes the basis for the release. This approach
+releasing whenever changes are merged into `main`, a specific historical commit
+on `main` is chosen as the release point at a scheduled cadence. This approach
 greatly simplifies the release process, eliminating the need for complex branch
 management and cherry-picking. This is illustrated in the diagram below:
 
 <!-- prettier-ignore-start -->
 <div class="plantuml-container">
 <!-- prettier-ignore-end -->
+
 <!-- prettier-ignore-start -->
 {% plantuml %}
 @startuml
@@ -266,6 +268,7 @@ endlegend
 
 <!-- prettier-ignore-start -->
 </div>
+
 <!-- prettier-ignore-end -->
 
 - **Short-lived feature branches:** The light blue lines represent short-lived
@@ -318,7 +321,6 @@ developers feel more connected to the production environment. This increased
 sense of ownership and responsibility translates into higher-quality code, fewer
 bugs, and ultimately, a better product.
 
-
 ## The Golden State
 
 The ultimate goal, the "Golden State" we envision with Trunk-Based Development
@@ -332,6 +334,7 @@ What does this look like?
 <!-- prettier-ignore-start -->
 <div class="plantuml-container">
 <!-- prettier-ignore-end -->
+
 <!-- prettier-ignore-start -->
 {% plantuml %}
 @startuml
@@ -509,8 +512,8 @@ necessitates several key capabilities:
 
 #### Robust Environment Variable Management
 
-Because `main` is deployed to different environments (e.g., development, QA,
-UAT, production), the codebase must be able to adapt to environment-specific
+Because `main` is deployed to different environments (e.g., QA, UAT,
+production), the codebase must be able to adapt to environment-specific
 configurations. This means having a robust mechanism for managing environment
 variables that control things like API endpoints, email addresses, and other
 environment-specific settings. These variables must be injected into the
