@@ -413,7 +413,7 @@ Here's the key difference: after a developer merges their feature branch into
 `main`, the system takes over. Features are automatically promoted through QA,
 UAT, and finally production on a pre-defined schedule. This automated promotion
 occurs by creating a new `release_next` branch from `main` twice per week. Then,
-once per week, a new `realease_active` branch is created from `release_next`.
+once per week, a new `release_active` branch is created from `release_next`.
 
 This **"merge once, then walk away"** paradigm allows developers to focus on
 what they do best: building features. They no longer need to worry about the
