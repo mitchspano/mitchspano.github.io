@@ -53,3 +53,8 @@ plugins:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+header_pages:
+  - arrive-on-time.md
+  - about.md
+  - blog/index.md
+  - resume.md

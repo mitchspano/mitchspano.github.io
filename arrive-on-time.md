@@ -4,13 +4,15 @@ title: Arrive On Time
 permalink: /arrive-on-time/
 ---
 
-# Arrive on Time
-
 Ever been so focused on a task, or stuck in back-to-back meetings, that you
 completely miss the notification for your next call? "Arrive on Time" prevents
 those "oops, I'm late" moments. It's a simple, private, and secure browser
 extension that automatically opens your Google Meet tab right before your
 scheduled event, ensuring you arrive on time without breaking your focus.
+
+<div style="display: flex; justify-content: center; margin: 2em 0;">
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/Y4wZYs4M_GY" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+</div>
 
 ## How It Works
 
@@ -71,4 +73,4 @@ your data and, more importantly, what it **does not** do.
 day a little easier, with privacy at its core.
 
 For a complete overview of our data practices, please review our official
-[Privacy Policy](https://www.freeprivacypolicy.com/live/6ad658c3-4532-40e9-b372-fc7fea534d15).
+[Privacy Policy](/arrive-on-time/privacy/).
